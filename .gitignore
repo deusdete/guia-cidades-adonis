@@ -1,0 +1,8 @@
+node_modules
+build
+coverage
+.vscode
+.DS_STORE
+.env
+tmp
+guia-cidades-314623-22aa92ea55db.json
