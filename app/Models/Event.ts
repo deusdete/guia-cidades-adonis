@@ -11,6 +11,7 @@ export default class Event extends BaseModel {
   @column()
   public description: string
 
+
   @column()
   public store_id: number
 
@@ -40,6 +41,12 @@ export default class Event extends BaseModel {
 
   @column()
   public user_id: number
+
+  @column()
+  public city: string
+
+  @column()
+  public uf: string
 
   @column()
   public date_begin: string

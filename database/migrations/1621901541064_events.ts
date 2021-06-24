@@ -18,6 +18,8 @@ export default class Events extends BaseSchema {
       table.string('image_url').nullable()
       table.string('image_name').nullable()
       table.integer('user_id').notNullable()
+      table.string('city').notNullable()
+      table.string('uf').notNullable()
       table.string('date_begin').nullable()
       table.string('date_end').nullable()
       table.timestamp('created_at', { useTz: true })

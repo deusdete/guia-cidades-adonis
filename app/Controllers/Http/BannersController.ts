@@ -67,7 +67,7 @@ export default class BannersController {
         await banner.save()
       }
 
-      return response.status(201).send({message: 'Categoria criada com sucesso'})
+      return response.status(201).send({message: 'Banner criada com sucesso'})
 
     } catch (err) {
       console.log('err', err)

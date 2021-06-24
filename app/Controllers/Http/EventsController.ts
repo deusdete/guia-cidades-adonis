@@ -31,11 +31,14 @@ export default class EventsController {
     const {
       name,
       description,
+      address,
       website,
       latitude,
       longitude,
       telephone,
       status,
+      city, 
+      uf,
       date_begin,
       date_end,
     } = request.all()
@@ -53,11 +56,14 @@ export default class EventsController {
       const event = await Event.create({
         name,
         description,
+        address,
         website,
         latitude,
         longitude,
         telephone,
         status,
+        city, 
+        uf,
         date_begin,
         date_end,
         user_id: auth.user?.id

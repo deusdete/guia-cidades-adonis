@@ -19,7 +19,7 @@ export default class CategoriesController {
   async index() {
     try {
       const categories = await Category.all()
-
+      
       return categories
 
     } catch (error) {

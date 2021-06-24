@@ -15,7 +15,7 @@ export default class AuthController {
   }
 
   async register({request, response}: HttpContextContract){
-    const body = request.only(['email', 'password', 'isManager'])
+    const body = request.only(['email', 'password', 'isManager', 'isUser'])
 
     try {
 
