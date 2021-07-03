@@ -5,5 +5,7 @@ coverage
 .DS_STORE
 .env
 tmp
+yarn.lock
+package-lock.json
 
 guia-cidades-314623-3a597a23fc8b.json
