@@ -1,12 +1,9 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Store from 'App/Models/Store'
 
-import Application from '@ioc:Adonis/Core/Application'
 import Env from '@ioc:Adonis/Core/Env'
 
-import { v4 as uuidv4 } from 'uuid'
 import path from 'path'
-import fs from 'fs'
 
 import { Storage } from '@google-cloud/storage'
 import updadeFile from 'App/Utils/UpdateFile'
