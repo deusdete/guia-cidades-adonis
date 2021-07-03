@@ -42,6 +42,8 @@ Route.resource('store', 'StoresController')
     update: 'auth',
     destroy: 'auth'
   })
+Route.delete('store/:id/images', 'StoresController.deleteImages')
+  .middleware('auth')
 
 Route.resource('banner', 'BannersController')
   .apiOnly()

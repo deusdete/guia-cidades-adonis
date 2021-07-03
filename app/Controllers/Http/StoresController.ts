@@ -19,7 +19,17 @@ export default class StoresController {
     try {
 
 
-      const stores = await Store.all()
+      const storesData = await Store.all()
+
+      const stores = storesData.map(store => {
+        const storeJSON = store.toJSON()
+        return {
+          ...storeJSON,
+          images_url: JSON.parse(storeJSON.images_url),
+          images_names: JSON.parse(storeJSON.images_names)
+        }
+      })
+
       return stores
 
     } catch (error) {
@@ -94,7 +104,14 @@ export default class StoresController {
   }
 
   async show({ request }: HttpContextContract) {
-    const store = await Store.findOrFail(request.param('id'))
+    const storeData = await Store.findOrFail(request.param('id'))
+    const storeJSON = storeData.toJSON()
+    
+    const store = {
+      ...storeJSON,
+      images_url: JSON.parse(storeJSON.images_url),
+      images_names: JSON.parse(storeJSON.images_names)
+    }
 
     return store
   }
@@ -148,14 +165,64 @@ export default class StoresController {
       await bucket.deleteFiles({
         prefix: `stores/${id}/`,
       })
+      await store.delete()
+
+      return response.send({ message: 'Loja apagado com sucesso' })
 
     } catch (error) {
       console.log('deleteFiles erro: ', error)
+      return response.status(404).send({ message: 'Erro ao apagado loja' })
     }
 
-    await store.delete()
+   
+  }
 
-    return response.send({ message: 'Loja apagado com sucesso' })
+  public async deleteImages({ request, response }: HttpContextContract) {
+    const id = request.param('id')
+    const {all, index} = request.all()
+    const store = await Store.findOrFail(id)
+
+    try {
+
+      if(all){
+        await bucket.deleteFiles({
+          prefix: `stores/${id}/`,
+        })
+        
+        store.images_names = "[]"
+        store.images_url = "[]"
+
+        store.save()
+
+        return response.send({ message: 'Images apagado com sucesso' })
+      }else{
+
+        const image_names = JSON.parse(store.images_names)
+
+        const file =  bucket.file(`stores/${id}/${image_names[index]}`);
+        await file.delete()
+
+        let newImagesName = JSON.parse(store.images_names)
+        let newImagesUrl = JSON.parse(store.images_url)
+        newImagesName.slice(index, 1) 
+        newImagesUrl.slice(index, 1) 
+
+        console.log({newImagesName, newImagesUrl})
+
+        store.images_names = JSON.stringify(newImagesName)
+        store.images_url = JSON.stringify(newImagesUrl)
+
+        store.save()
+
+        return response.send({ message: 'Image apagado com sucesso' })
+      }
+      
+
+    } catch (error) {
+      console.log('deleteImages erro: ', error)
+      return response.status(404).send({ message: 'Falha ao apagado imagem index', all, index })
+    }
+
   }
 
 }
