@@ -23,7 +23,7 @@ export default class StoresController {
 
 
       const stores = await Store.all()
-      return stores.map((user) => user.toJSON())
+      return stores
 
     } catch (error) {
 
