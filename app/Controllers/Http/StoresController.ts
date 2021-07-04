@@ -55,25 +55,6 @@ export default class StoresController {
     }
   }
 
-  async pagination({ request, auth, response }: HttpContextContract) {
-
-    try {
-
-      const page = request.input('page', 1)
-      console.log('page', page)
-      const limit = 15
-
-      const stores = await Store.query().paginate(page, limit)
-      console.log(stores)
-
-      return stores
-
-    } catch (error) {
-      console.log(error)
-      return response.status(404).send({ message: 'Erro ao buscar get home' })
-    }
-  }
-
   async store({ request, auth, response }: HttpContextContract) {
 
     const {

@@ -43,7 +43,7 @@ Route.resource('store', 'StoresController')
     update: 'auth',
     destroy: 'auth'
   })
-Route.post('store/pagination', 'StoresController.pagination')
+
 Route.delete('store/:id/images', 'StoresController.deleteImages')
   .middleware('auth')
 
