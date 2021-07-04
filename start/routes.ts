@@ -30,7 +30,7 @@ Route.post('register', 'AuthController.register')
 Route.resource('category', 'CategoriesController')
   .apiOnly()
   .middleware({
-    store: 'auth',
+    store: ['auth'],
     update: 'auth',
     destroy: 'auth'
   })
@@ -38,16 +38,19 @@ Route.resource('category', 'CategoriesController')
 Route.resource('store', 'StoresController')
   .apiOnly()
   .middleware({
+    index: 'guest',
     store: 'auth',
     update: 'auth',
     destroy: 'auth'
   })
+Route.post('store/pagination', 'StoresController.pagination')
 Route.delete('store/:id/images', 'StoresController.deleteImages')
   .middleware('auth')
 
 Route.resource('banner', 'BannersController')
   .apiOnly()
   .middleware({
+    index: 'guest',
     store: 'auth',
     update: 'auth',
     destroy: 'auth'
@@ -56,7 +59,12 @@ Route.resource('banner', 'BannersController')
 Route.resource('event', 'EventsController')
   .apiOnly()
   .middleware({
+    index: 'guest',
     store: 'auth',
     update: 'auth',
     destroy: 'auth'
   })
+
+ Route.get('home', 'HomeController.index')
+ 
+ 

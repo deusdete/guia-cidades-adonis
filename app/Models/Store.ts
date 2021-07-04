@@ -24,7 +24,7 @@ export default class Store extends BaseModel {
   public category_id: number
 
   @column()
-  public status: number
+  public status: boolean
 
   @column()
   public detail: string

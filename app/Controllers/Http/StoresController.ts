@@ -15,25 +15,62 @@ const storage = new Storage({
 const bucket = storage.bucket('guia_cidades');
 
 export default class StoresController {
-  async index() {
+  async index({ request, auth, response }: HttpContextContract) {
     try {
+      const page = request.input('page', 1)
+      const limit = 1
 
+      let storesData: any = []
 
-      const storesData = await Store.all()
+      console.log('auth.isLoggedIn',auth.isLoggedIn)
 
-      const stores = storesData.map(store => {
-        const storeJSON = store.toJSON()
+      if(auth.isLoggedIn){
+        storesData = await Store.query()
+          .orderBy('created_at', 'desc')
+          .paginate(page, limit)
+      }else{
+        storesData = await Store.query()
+          .where('status', '=', 1)
+          .orderBy('created_at', 'desc')
+          .paginate(page, limit)
+      }
+     
+
+      const paginationJSON = storesData.serialize({
+        fields: ['id', 'name', 'address', 'images_url', 'status']
+      })
+
+      const data = paginationJSON.data.map(store => {
         return {
-          ...storeJSON,
-          images_url: JSON.parse(storeJSON.images_url),
-          images_names: JSON.parse(storeJSON.images_names)
+          ...store,
+          images_url: JSON.parse(store.images_url)
         }
       })
+
+      return { meta: paginationJSON.meta, data }
+
+    } catch (error) {
+      console.log(error)
+      return response.status(404).send({ message: 'Erro ao bostar por lojas' })
+    }
+  }
+
+  async pagination({ request, auth, response }: HttpContextContract) {
+
+    try {
+
+      const page = request.input('page', 1)
+      console.log('page', page)
+      const limit = 15
+
+      const stores = await Store.query().paginate(page, limit)
+      console.log(stores)
 
       return stores
 
     } catch (error) {
-
+      console.log(error)
+      return response.status(404).send({ message: 'Erro ao buscar get home' })
     }
   }
 
@@ -55,6 +92,20 @@ export default class StoresController {
     } = request.all()
     const images = request.files('images')
 
+    console.log({
+      name,
+      detail,
+      telephone,
+      website,
+      address,
+      latitude,
+      longitude,
+      status,
+      category_id,
+      video_url,
+      city,
+      uf,
+    })
     console.log(auth.user?.isAdmin)
 
     const store = await Store.create({
@@ -85,12 +136,14 @@ export default class StoresController {
           file: image
         })
 
+        console.log(info)
+
         imageUrls.push(info.url)
         imageNames.push(info.fileName)
       }
 
       store.images_url = JSON.stringify(imageUrls)
-      store.images_names =  JSON.stringify(imageNames)
+      store.images_names = JSON.stringify(imageNames)
 
       await store.save()
 
@@ -106,7 +159,7 @@ export default class StoresController {
   async show({ request }: HttpContextContract) {
     const storeData = await Store.findOrFail(request.param('id'))
     const storeJSON = storeData.toJSON()
-    
+
     const store = {
       ...storeJSON,
       images_url: JSON.parse(storeJSON.images_url),
@@ -174,49 +227,47 @@ export default class StoresController {
       return response.status(404).send({ message: 'Erro ao apagado loja' })
     }
 
-   
+
   }
 
   public async deleteImages({ request, response }: HttpContextContract) {
     const id = request.param('id')
-    const {all, index} = request.all()
+    const { all, index } = request.all()
     const store = await Store.findOrFail(id)
-
+    console.log({ all, index })
     try {
 
-      if(all){
+      if (all) {
         await bucket.deleteFiles({
           prefix: `stores/${id}/`,
         })
-        
+
         store.images_names = "[]"
         store.images_url = "[]"
 
-        store.save()
+        await store.save()
 
         return response.send({ message: 'Images apagado com sucesso' })
-      }else{
+      } else {
 
         const image_names = JSON.parse(store.images_names)
 
-        const file =  bucket.file(`stores/${id}/${image_names[index]}`);
+        const file = bucket.file(`stores/${id}/${image_names[index]}`);
         await file.delete()
 
         let newImagesName = JSON.parse(store.images_names)
         let newImagesUrl = JSON.parse(store.images_url)
-        newImagesName.slice(index, 1) 
-        newImagesUrl.slice(index, 1) 
 
-        console.log({newImagesName, newImagesUrl})
+        console.log({ newImagesName: newImagesName.slice(index, 1), newImagesUrl: newImagesUrl.slice(index, 1) })
 
-        store.images_names = JSON.stringify(newImagesName)
-        store.images_url = JSON.stringify(newImagesUrl)
+        store.images_names = JSON.stringify(newImagesName.slice(index, 1))
+        store.images_url = JSON.stringify(newImagesUrl.slice(index, 1))
 
-        store.save()
+        await store.save()
 
         return response.send({ message: 'Image apagado com sucesso' })
       }
-      
+
 
     } catch (error) {
       console.log('deleteImages erro: ', error)
