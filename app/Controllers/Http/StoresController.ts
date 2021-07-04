@@ -18,7 +18,7 @@ export default class StoresController {
   async index({ request, auth, response }: HttpContextContract) {
     try {
       const page = request.input('page', 1)
-      const limit = 1
+      const limit = 15
 
       let storesData: any = []
 
@@ -87,7 +87,6 @@ export default class StoresController {
       city,
       uf,
     })
-    console.log(auth.user?.isAdmin)
 
     const store = await Store.create({
       name,
@@ -150,7 +149,7 @@ export default class StoresController {
     return store
   }
 
-  public async update({ request }: HttpContextContract) {
+  public async update({ request, response }: HttpContextContract) {
 
     const store = await Store.findOrFail(request.param('id'))
 
@@ -168,8 +167,10 @@ export default class StoresController {
       city,
       uf,
     } = request.all()
+    const images = request.files('images')
 
-    store.name = name
+    try {
+      store.name = name
     store.detail = detail
     store.telephone = telephone
     store.website = website
@@ -183,9 +184,34 @@ export default class StoresController {
     store.uf = uf
     store.video_url = video_url
 
+    const imagesUrlData = JSON.parse(store.images_url)
+    const imagesNamesData = JSON.parse(store.images_names)
+
+    if(images){
+      for (let image of images) {
+        const info = await updadeFile({
+          folder: 'stores',
+          subFolder: store.id,
+          file: image
+        })
+
+        console.log(info)
+
+        imagesUrlData.push(info.url)
+        imagesNamesData.push(info.fileName)
+      }
+    }
+
+    store.images_url = JSON.stringify(imagesUrlData)
+    store.images_names = JSON.stringify(imagesNamesData)
+
     await store.save()
 
-    return store
+    return response.send({message: 'Loja atualizada com suceso'})
+    } catch (error) {
+      console.log(error)
+      return response.status(400).send({message: 'Erro ao atualizar store'})
+    }
   }
 
 
@@ -215,7 +241,7 @@ export default class StoresController {
     const id = request.param('id')
     const { all, index } = request.all()
     const store = await Store.findOrFail(id)
-    console.log({ all, index })
+    console.log({ all, index, store })
     try {
 
       if (all) {
@@ -228,7 +254,7 @@ export default class StoresController {
 
         await store.save()
 
-        return response.send({ message: 'Images apagado com sucesso' })
+        return response.send({ message: 'Images apagadas com sucesso' })
       } else {
 
         const image_names = JSON.parse(store.images_names)
@@ -239,10 +265,11 @@ export default class StoresController {
         let newImagesName = JSON.parse(store.images_names)
         let newImagesUrl = JSON.parse(store.images_url)
 
-        console.log({ newImagesName: newImagesName.slice(index, 1), newImagesUrl: newImagesUrl.slice(index, 1) })
+        newImagesName.slice(index, 1)
+        newImagesUrl.slice(index, 1)
 
-        store.images_names = JSON.stringify(newImagesName.slice(index, 1))
-        store.images_url = JSON.stringify(newImagesUrl.slice(index, 1))
+        store.images_names = JSON.stringify(newImagesName)
+        store.images_url = JSON.stringify(newImagesUrl)
 
         await store.save()
 
