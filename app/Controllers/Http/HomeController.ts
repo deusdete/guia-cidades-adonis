@@ -10,7 +10,7 @@ export default class HomeController {
 
         try {
             const banners = await Banner.all()
-            const catogories = await Category.all()
+            const categories = await Category.all()
             const events = await Event.query().limit(10)
             const storesData = await Store.query()
                 .orderBy('id', 'desc')
@@ -27,7 +27,7 @@ export default class HomeController {
 
             return response.send({
                 banners,
-                catogories,
+                categories,
                 events,
                 stores
             })
