@@ -30,7 +30,7 @@ Route.post('register', 'AuthController.register')
 Route.resource('category', 'CategoriesController')
   .apiOnly()
   .middleware({
-    store: ['auth'],
+    store: 'auth',
     update: 'auth',
     destroy: 'auth'
   })
@@ -44,6 +44,8 @@ Route.resource('store', 'StoresController')
     destroy: 'auth'
   })
 
+Route.get('store/all/list', 'StoresController.allList')
+  .middleware('auth')
 Route.delete('store/:id/images', 'StoresController.deleteImages')
   .middleware('auth')
 
@@ -64,7 +66,10 @@ Route.resource('event', 'EventsController')
     update: 'auth',
     destroy: 'auth'
   })
+Route.get('event/all/list', 'EventsController.allList')
+Route.delete('event/:id/images', 'EventsController.deleteImages')
 
- Route.get('home', 'HomeController.index')
+
+Route.get('home', 'HomeController.index')
  
  

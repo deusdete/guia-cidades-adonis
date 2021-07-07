@@ -87,17 +87,57 @@ export default class CategoriesController {
     return category
   }
 
-  public async update({ request }: HttpContextContract) {
+  public async update({ request, response }: HttpContextContract) {
 
     const category = await Category.findOrFail(request.param('id'))
 
     const { name } = request.body()
 
-    category.name = name
+    const imageFile = request.file('image')
+    const iconFile = request.file('icon')
 
-    await category.save()
+    let imageInfo = {
+      url: '',
+      fileName: ''
+    }
+    let iconInfo = {
+      url: '',
+      fileName: ''
+    }
 
-    return category
+    try {
+
+      if (imageFile) {
+        imageInfo = await updadeFile({
+          folder: 'caregorias',
+          subFolder: null,
+          file: imageFile
+        })
+
+        category.imageName = imageInfo.url
+        category.imageName = imageInfo.fileName
+      }
+
+      if(iconFile){
+        iconInfo = await updadeFile({
+          folder: 'categories',
+          subFolder: null,
+          file: iconFile
+        })
+
+        category.iconUrl = iconInfo.url
+        category.iconName = iconInfo.fileName
+      }
+
+
+      category.name = name
+
+      await category.save()
+
+      return response.send({message: 'Categorias atualizada com suceso'})
+    } catch (error) {
+      return response.status(404).send({message: 'Erro ao tentar atualziar categoria'})
+    }
   }
 
 
@@ -115,6 +155,49 @@ export default class CategoriesController {
     await category.delete()
 
     return response.send({ message: 'Categoria apagado com sucesso' })
+  }
+
+  public async deleteImages({ request, response }: HttpContextContract) {
+    const id = request.param('id')
+    const { all, index } = request.all()
+    const category = await Category.findOrFail(id)
+    console.log({ all, index })
+    try {
+
+      if (all) {
+        await bucket.deleteFiles({
+          prefix: `categories/${id}/`,
+        })
+
+        category.iconName = ""
+        category.iconUrl = ""
+        category.imageName = ""
+        category.imageUrl = ""
+
+        await category.save()
+
+        return response.send({ message: 'Images apagadas com sucesso' })
+      } else {
+
+
+
+        const file = bucket.file(`stores/${id}/${index}`);
+        await file.delete()
+
+       
+
+
+        await category.save()
+
+        return response.send({ message: 'Image apagado com sucesso' })
+      }
+
+
+    } catch (error) {
+      console.log('deleteImages erro: ', error)
+      return response.status(404).send({ message: 'Falha ao apagado imagem index', all, index })
+    }
+
   }
 
 }

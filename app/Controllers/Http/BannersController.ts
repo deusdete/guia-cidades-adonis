@@ -15,14 +15,36 @@ const storage = new Storage({
 const bucket = storage.bucket('guia_cidades');
 
 export default class BannersController {
-  async index() {
+  async index({request, auth, response}: HttpContextContract) {
     try {
-      const banners = await Banner.all()
+      const page = request.input('page', 1)
+      const limit = 15
 
-      return banners
+      let bannersData: any = []
+
+      console.log('auth.isLoggedIn',auth.isLoggedIn)
+
+      if(auth.isLoggedIn){
+        bannersData = await Banner.query()
+          .orderBy('id', 'desc')
+          .paginate(page, limit)
+      }else{
+        bannersData = await Banner.query()
+          .where('status', '=', 1)
+          .orderBy('created_at', 'desc')
+          .paginate(page, limit)
+      }
+     
+
+      const paginationJSON = bannersData.serialize({
+        fields: ['id', 'title', 'description', 'image_url', 'image_name', 'status']
+      })
+
+      return paginationJSON
 
     } catch (error) {
-
+      console.log(error)
+      return response.status(404).send({ message: 'Erro ao bostar por eventos' })
     }
   }
 
@@ -82,7 +104,7 @@ export default class BannersController {
     return category
   }
 
-  public async update({ request }: HttpContextContract) {
+  public async update({ request, response }: HttpContextContract) {
 
     const banner = await Banner.findOrFail(request.param('id'))
 
@@ -94,15 +116,39 @@ export default class BannersController {
       status,
     } = request.all()
 
-    banner.title = title
-    banner.description = description
-    banner.type = type
-    banner.link_id = link_id
-    banner.status = status
+    const imageFile = request.file('image')
 
-    await banner.save()
+    let imageInfo = {
+      url: '',
+      fileName: ''
+    }
 
-    return banner
+    try {
+      if (imageFile) {
+        imageInfo = await updadeFile({
+          folder: 'banners',
+          subFolder: banner.id,
+          file: imageFile
+        })
+
+        banner.image_url = imageInfo.url
+        banner.image_name = imageInfo.fileName
+      }
+
+      banner.title = title
+      banner.description = description
+      banner.type = type
+      banner.link_id = link_id
+      banner.status = status
+
+      await banner.save()
+
+      return response.send({message: 'Evento atualizada com suceso'})
+    } catch (error) {
+      return response.status(404).send({message: 'Erro ao tentar atualziar evento'})
+    }
+
+    
   }
 
 

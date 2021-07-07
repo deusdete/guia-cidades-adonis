@@ -15,6 +15,24 @@ const storage = new Storage({
 const bucket = storage.bucket('guia_cidades');
 
 export default class StoresController {
+  async allList({ auth, response }: HttpContextContract){
+   
+    try {
+
+      const user: any = auth?.user
+      const storesData = await Store.query().where('user_id', '=', user?.id)
+      const storesJSON = storesData.map(store => {
+        return {
+          id: store.id,
+          name: store.name
+        }
+      })
+      return response.send(storesJSON)
+    } catch (error) {
+      return response.status(404).send({messege: 'Erro ao buscar emrpesas'})
+    }
+  }
+
   async index({ request, auth, response }: HttpContextContract) {
     try {
       const page = request.input('page', 1)
@@ -26,7 +44,7 @@ export default class StoresController {
 
       if(auth.isLoggedIn){
         storesData = await Store.query()
-          .orderBy('created_at', 'desc')
+          .orderBy('id', 'desc')
           .paginate(page, limit)
       }else{
         storesData = await Store.query()
@@ -37,13 +55,14 @@ export default class StoresController {
      
 
       const paginationJSON = storesData.serialize({
-        fields: ['id', 'name', 'address', 'images_url', 'status']
+        fields: ['id', 'name', 'address', 'images_url', 'images_names', 'status']
       })
 
       const data = paginationJSON.data.map(store => {
         return {
           ...store,
-          images_url: JSON.parse(store.images_url)
+          images_url: JSON.parse(store.images_url),
+          images_names: JSON.parse(store.images_names)
         }
       })
 
@@ -239,9 +258,9 @@ export default class StoresController {
 
   public async deleteImages({ request, response }: HttpContextContract) {
     const id = request.param('id')
-    const { all, index } = request.all()
+    const { all, index, image_name } = request.all()
     const store = await Store.findOrFail(id)
-    console.log({ all, index, store })
+    console.log({ all, index, image_name })
     try {
 
       if (all) {
@@ -262,11 +281,19 @@ export default class StoresController {
         const file = bucket.file(`stores/${id}/${image_names[index]}`);
         await file.delete()
 
-        let newImagesName = JSON.parse(store.images_names)
-        let newImagesUrl = JSON.parse(store.images_url)
+        const images_names = JSON.parse(store.images_names)
+        const images_url = JSON.parse(store.images_url)
 
-        newImagesName.slice(index, 1)
-        newImagesUrl.slice(index, 1)
+        const newImagesName = images_names.filter(function(_value, indexElement){ 
+          
+            return indexElement !== index;
+        });
+
+        const newImagesUrl = images_url.filter(function(_value, indexElement){ 
+            return indexElement !== index;
+        });
+
+        console.log({newImagesName, newImagesUrl})
 
         store.images_names = JSON.stringify(newImagesName)
         store.images_url = JSON.stringify(newImagesUrl)
