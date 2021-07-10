@@ -6,7 +6,8 @@ export default class AuthController {
     const password = request.input('password')
 
     try {
-      const token = await auth.use('api').attempt(email, password)
+      const token = await auth.use('api').attempt(email, password,)
+
       return token
     } catch(error) {
       console.log(error)
@@ -30,6 +31,16 @@ export default class AuthController {
     } catch(error) {
       console.log(error)
       return response.badRequest({message: 'Erro ao tentar criar usuário'})
+    }
+  }
+
+  async profile({auth, response}: HttpContextContract){
+    if(await auth.isLoggedIn){
+      const user = await auth.user;
+
+      return response.send(user)
+    }else{
+      return response.status(401).send({messege: 'Não autenticado'})
     }
   }
 }

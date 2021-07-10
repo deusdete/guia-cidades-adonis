@@ -26,6 +26,7 @@ Route.get('/', async () => {
 
 Route.post('login', 'AuthController.login')
 Route.post('register', 'AuthController.register')
+Route.get('me', 'AuthController.profile').middleware('auth')
 
 Route.resource('category', 'CategoriesController')
   .apiOnly()
