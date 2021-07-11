@@ -24,15 +24,23 @@ export default class Store extends BaseModel {
   public category_id: number
 
   @column()
-  public status: boolean
+  public status: number
 
   @column()
   public detail: string
 
-  @column()
+  @column({
+    serialize: (value: string | null) => {
+      return value ? JSON.parse(value) : value
+    },
+  })
   public images_url: string
 
-  @column()
+  @column({
+    serialize: (value: string | null) => {
+      return value ? JSON.parse(value) : value
+    },
+  })
   public images_names: string
 
   @column()

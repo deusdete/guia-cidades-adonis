@@ -4,7 +4,11 @@ import {
   column,
   beforeSave,
   BaseModel,
+  hasOne,
+  HasOne,
 } from '@ioc:Adonis/Lucid/Orm'
+import Plan from './Plan'
+import Subscription from './Subscription'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -20,13 +24,20 @@ export default class User extends BaseModel {
   public rememberMeToken?: string
 
   @column()
-  public isAdmin?: string
+  public isAdmin?: number
 
   @column()
-  public isManager?: string
+  public isManager?: number
 
   @column()
-  public isUser?: string
+  public isUser?: number
+
+
+  @hasOne(() => Subscription,{
+    foreignKey: 'user_id',
+    serializeAs: 'userSubscription'
+  })
+  public subscription: HasOne<typeof Subscription>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

@@ -16,14 +16,7 @@ export default class HomeController {
                 .orderBy('id', 'desc')
                 .limit(4)
 
-            const stores = storesData.map(store => {
-                const storeJSON = store.toJSON()
-                return {
-                ...storeJSON,
-                images_url: JSON.parse(storeJSON.images_url),
-                images_names:  JSON.parse(storeJSON.images_names),
-                }
-            })
+            const stores = storesData.map(store => store.toJSON())
 
             return response.send({
                 banners,

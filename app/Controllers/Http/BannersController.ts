@@ -25,9 +25,19 @@ export default class BannersController {
       console.log('auth.isLoggedIn',auth.isLoggedIn)
 
       if(auth.isLoggedIn){
-        bannersData = await Banner.query()
-          .orderBy('id', 'desc')
-          .paginate(page, limit)
+        const user: any = auth?.user
+        if(user?.isAdmin){
+          bannersData = await Banner.query()
+            .orderBy('id', 'desc')
+            .paginate(page, limit)
+         
+        }else{
+          bannersData = await Banner.query()
+            .where('user_id', '=', user?.id)
+            .orderBy('id', 'desc')
+            .paginate(page, limit)
+
+        }
       }else{
         bannersData = await Banner.query()
           .where('status', '=', 1)
@@ -48,7 +58,11 @@ export default class BannersController {
     }
   }
 
-  async store({ request, auth, response }: HttpContextContract) {
+  async store({ bouncer, request, auth, response }: HttpContextContract) {
+
+    await bouncer
+      .with('BannerPolicy')
+      .authorize('create')
 
     const {
       title,
@@ -98,15 +112,24 @@ export default class BannersController {
 
   }
 
-  async show({request}: HttpContextContract){
+  async show({bouncer, request}: HttpContextContract){
+    
     const category = await Banner.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('BannerPolicy')
+      .authorize('view', category)
 
     return category
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({bouncer, request, response }: HttpContextContract) {
 
     const banner = await Banner.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('BannerPolicy')
+      .authorize('update', banner)
 
     const {
       title,
@@ -152,9 +175,15 @@ export default class BannersController {
   }
 
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ bouncer, request, response }: HttpContextContract) {
 
+   
     const banner = await Banner.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('BannerPolicy')
+      .authorize('delete', banner)
+
 
     try {
       await bucket.file(`banners/${banner.image_name}`).delete();

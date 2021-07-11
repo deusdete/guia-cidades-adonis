@@ -7,6 +7,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import path from 'path'
 
 import { Storage } from '@google-cloud/storage'
+import Subscription from 'App/Models/Subscription'
 
 const storage = new Storage({
   keyFile: path.resolve(Env.get('GOOGLE_APPLICATION_CREDENTIALS'))
@@ -41,12 +42,20 @@ export default class EventsController {
 
       let eventsData: any = []
 
-      console.log('auth.isLoggedIn',auth.isLoggedIn)
-
       if(auth.isLoggedIn){
-        eventsData = await Event.query()
+        const user: any = auth?.user
+        if(user?.isAdmin){
+          eventsData = await Event.query()
+            .orderBy('id', 'desc')
+            .paginate(page, limit)
+         
+        }else{
+          eventsData = await Event.query()
+          .where('user_id', '=', user?.id)
           .orderBy('id', 'desc')
           .paginate(page, limit)
+        }
+        
       }else{
         eventsData = await Event.query()
           .where('status', '=', 1)
@@ -67,8 +76,10 @@ export default class EventsController {
     }
   }
 
-  async store({ request, auth, response }: HttpContextContract) {
-
+  async store({ bouncer, request, subscriptionId, auth, response }: HttpContextContract) {
+    await bouncer
+      .with('EventPolicy')
+      .authorize('create')
     const {
       name,
       description,
@@ -93,7 +104,7 @@ export default class EventsController {
 
     try {
 
-
+      const userSubscription = await Subscription.findOrFail(subscriptionId)
       const event = await Event.create({
         name,
         description,
@@ -121,6 +132,11 @@ export default class EventsController {
         event.image_name = imageInfo.fileName
 
         await event.save()
+
+        userSubscription.active_events = userSubscription.active_events + 1
+
+        await userSubscription.save()
+
       }
 
       return response.status(201).send({message: 'Evento criada com sucesso'})
@@ -132,15 +148,23 @@ export default class EventsController {
 
   }
 
-  async show({request}: HttpContextContract){
+  async show({bouncer, request}: HttpContextContract){
     const event = await Event.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('EventPolicy')
+      .authorize('view', event)
 
     return event
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ bouncer, request, response }: HttpContextContract) {
 
     const event = await Event.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('EventPolicy')
+      .authorize('update', event)
 
     const {
       name,
@@ -205,9 +229,14 @@ export default class EventsController {
   }
 
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({bouncer, request, response }: HttpContextContract) {
 
     const event = await Event.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('EventPolicy')
+      .authorize('delete', event)
+
 
     try {
       await bucket.file(`events/${event.image_name}`).delete();
@@ -220,10 +249,15 @@ export default class EventsController {
     return response.send({ message: 'Evento apagado com sucesso' })
   }
 
-  public async deleteImages({ request, response }: HttpContextContract) {
+  public async deleteImages({ bouncer, request, response }: HttpContextContract) {
     const id = request.param('id')
     const { all, image_name } = request.all()
     const event = await Event.findOrFail(id)
+
+    await bouncer
+      .with('EventPolicy')
+      .authorize('delete', event)
+
     console.log({ all, image_name })
     try {
 

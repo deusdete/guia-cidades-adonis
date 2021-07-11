@@ -19,57 +19,18 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import './routes/auth'
+import './routes/banner'
+import './routes/category'
+import './routes/event'
+import './routes/store'
+import './routes/user'
+import './routes/plans'
+import './routes/subscriptions'
 
 Route.get('/', async () => {
   return { hello: 'world' }
 })
-
-Route.post('login', 'AuthController.login')
-Route.post('register', 'AuthController.register')
-Route.get('me', 'AuthController.profile').middleware('auth')
-
-Route.resource('category', 'CategoriesController')
-  .apiOnly()
-  .middleware({
-    store: 'auth',
-    update: 'auth',
-    destroy: 'auth'
-  })
-
-Route.resource('store', 'StoresController')
-  .apiOnly()
-  .middleware({
-    index: 'guest',
-    store: 'auth',
-    update: 'auth',
-    destroy: 'auth'
-  })
-
-Route.get('store/all/list', 'StoresController.allList')
-  .middleware('auth')
-Route.delete('store/:id/images', 'StoresController.deleteImages')
-  .middleware('auth')
-
-Route.resource('banner', 'BannersController')
-  .apiOnly()
-  .middleware({
-    index: 'guest',
-    store: 'auth',
-    update: 'auth',
-    destroy: 'auth'
-  })
-
-Route.resource('event', 'EventsController')
-  .apiOnly()
-  .middleware({
-    index: 'guest',
-    store: 'auth',
-    update: 'auth',
-    destroy: 'auth'
-  })
-Route.get('event/all/list', 'EventsController.allList')
-Route.delete('event/:id/images', 'EventsController.deleteImages')
-
 
 Route.get('home', 'HomeController.index')
  

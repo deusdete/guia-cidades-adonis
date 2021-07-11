@@ -40,12 +40,20 @@ export default class StoresController {
 
       let storesData: any = []
 
-      console.log('auth.isLoggedIn',auth.isLoggedIn)
-
       if(auth.isLoggedIn){
-        storesData = await Store.query()
-          .orderBy('id', 'desc')
-          .paginate(page, limit)
+        const user: any = auth?.user
+        if(user?.isAdmin){
+          storesData = await Store.query()
+            .orderBy('id', 'desc')
+            .paginate(page, limit)
+         
+        }else{
+          storesData = await Store.query()
+            .where('user_id', '=', user?.id)
+            .orderBy('id', 'desc')
+            .paginate(page, limit)
+        }
+        
       }else{
         storesData = await Store.query()
           .where('status', '=', 1)
@@ -58,15 +66,7 @@ export default class StoresController {
         fields: ['id', 'name', 'address', 'images_url', 'images_names', 'status']
       })
 
-      const data = paginationJSON.data.map(store => {
-        return {
-          ...store,
-          images_url: JSON.parse(store.images_url),
-          images_names: JSON.parse(store.images_names)
-        }
-      })
-
-      return { meta: paginationJSON.meta, data }
+      return { meta: paginationJSON.meta, data: paginationJSON.data }
 
     } catch (error) {
       console.log(error)
@@ -74,7 +74,11 @@ export default class StoresController {
     }
   }
 
-  async store({ request, auth, response }: HttpContextContract) {
+  async store({ bouncer, request, auth, response }: HttpContextContract) {
+
+    await bouncer
+      .with('StorePolicy')
+      .authorize('create')
 
     const {
       name,
@@ -155,22 +159,26 @@ export default class StoresController {
 
   }
 
-  async show({ request }: HttpContextContract) {
+  async show({ bouncer, request }: HttpContextContract) {
+
+    
     const storeData = await Store.findOrFail(request.param('id'))
     const storeJSON = storeData.toJSON()
 
-    const store = {
-      ...storeJSON,
-      images_url: JSON.parse(storeJSON.images_url),
-      images_names: JSON.parse(storeJSON.images_names)
-    }
+    await bouncer
+      .with('StorePolicy')
+      .authorize('view', storeData)
 
-    return store
+    return storeJSON
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ bouncer, request, response }: HttpContextContract) {
 
     const store = await Store.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('StorePolicy')
+      .authorize('update', store)
 
     const {
       name,
@@ -234,9 +242,14 @@ export default class StoresController {
   }
 
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ bouncer, request, response }: HttpContextContract) {
     const id = request.param('id')
     const store = await Store.findOrFail(id)
+
+    await bouncer
+      .with('StorePolicy')
+      .authorize('delete', store)
+
 
     try {
 
@@ -256,10 +269,15 @@ export default class StoresController {
 
   }
 
-  public async deleteImages({ request, response }: HttpContextContract) {
+  public async deleteImages({ bouncer, request, response }: HttpContextContract) {
     const id = request.param('id')
     const { all, index, image_name } = request.all()
     const store = await Store.findOrFail(id)
+
+    await bouncer
+      .with('StorePolicy')
+      .authorize('delete', store)
+
     console.log({ all, index, image_name })
     try {
 

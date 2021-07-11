@@ -27,11 +27,15 @@ export default class CategoriesController {
     }
   }
 
-  async store({ request, response }: HttpContextContract) {
+  async store({ bouncer, request, response }: HttpContextContract) {
 
     const { name } = request.all()
     const imageFile = request.file('image')
     const iconFile = request.file('icon')
+
+    await bouncer
+      .with('CategoryPolicy')
+      .authorize('create')
 
     let imageInfo = {
       url: '',
@@ -87,9 +91,13 @@ export default class CategoriesController {
     return category
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ bouncer, request, response }: HttpContextContract) {
 
     const category = await Category.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('CategoryPolicy')
+      .authorize('update')
 
     const { name } = request.body()
 
@@ -141,9 +149,13 @@ export default class CategoriesController {
   }
 
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ bouncer, request, response }: HttpContextContract) {
 
     const category = await Category.findOrFail(request.param('id'))
+
+    await bouncer
+      .with('CategoryPolicy')
+      .authorize('delete')
 
     try {
       await bucket.file(`categories/${category.imageName}`).delete();

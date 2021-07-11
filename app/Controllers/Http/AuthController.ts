@@ -15,8 +15,13 @@ export default class AuthController {
     }
   }
 
-  async register({request, response}: HttpContextContract){
+  async register({bouncer, request, response}: HttpContextContract){
     const body = request.only(['email', 'password', 'isManager', 'isUser'])
+
+    
+    await bouncer
+      .with('UserPolicy')
+      .authorize('create')
 
     try {
 
@@ -34,13 +39,11 @@ export default class AuthController {
     }
   }
 
-  async profile({auth, response}: HttpContextContract){
-    if(await auth.isLoggedIn){
-      const user = await auth.user;
-
-      return response.send(user)
-    }else{
-      return response.status(401).send({messege: 'Não autenticado'})
+  async logout({auth}: HttpContextContract){
+    await auth.use('api').revoke()
+    return {
+      revoked: true
     }
   }
+
 }
