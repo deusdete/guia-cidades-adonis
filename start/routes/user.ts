@@ -8,4 +8,4 @@ Route.resource('users', 'UsersController')
     destroy: 'auth'
   })
 
-Route.get('users/me', 'UsersController.profile').middleware('auth')
+Route.get('users/me/profile', 'UsersController.profile').middleware('auth')

@@ -9,6 +9,7 @@ export default class UserPolicy extends BasePolicy {
     }
 
     public async view(user: User, userAuth: User) {
+		console.log(user.id === userAuth.id)
         return user.id === userAuth.id
 	}
 	public async create(user: User) {

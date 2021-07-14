@@ -9,31 +9,34 @@ export default class UsersController {
         return users
     }
 
-    async update({bouncer, request, response}: HttpContextContract){
+    async update({bouncer, auth, request, response}: HttpContextContract){
       const user = await User.findOrFail(request.param('id'))
 
-      const body = request.only(['email', 'isManager', 'isUser'])
+      const body = request.only(['email', 'is_manager', 'is_user', 'password', 'new_password'])
 
       await bouncer
         .with('UserPolicy')
         .authorize('update', user)
 
-      if(user.email !== body.email){
-        const emailExist = await User.findBy('email', body.email)
-
-        if(emailExist){
-          return response.status(401).send({messge: 'Já existe um usuário com esse email'})
-        }
-      }
-
-      user.email = body.email
-      user.isManager = body.isManager
-      user.isUser = body.isUser
-
-      await user.save()
-
-      return response.send({messege: 'Usuário atualizado com sucesso'})
+      if(body.new_password && body.password){
+        await auth.use('api').attempt(body.email, body.password)
+        user.email = body.email
+        user.isManager = body.is_manager
+        user.isUser = body.is_user
+        user.password = body.new_password
   
+        await user.save()
+  
+        return response.send({messege: 'Usuário atualizado com sucesso'})
+      }else{
+        user.email = body.email
+        user.isManager = body.is_manager
+        user.isUser = body.is_user
+  
+        await user.save()
+  
+        return response.send({messege: 'Usuário atualizado com sucesso'})
+      }
 
     }
 
@@ -48,7 +51,9 @@ export default class UsersController {
     }
 
     async profile({ bouncer, auth, response}: HttpContextContract){
+      console.log('auth')
       if(auth.isLoggedIn){
+       
           const user = await User.findOrFail(auth.user?.id)
 
           await bouncer
