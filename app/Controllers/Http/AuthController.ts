@@ -6,7 +6,7 @@ export default class AuthController {
     const password = request.input('password')
 
     try {
-      const token = await auth.use('api').attempt(email, password,)
+      const token = await auth.use('api').attempt(email, password)
 
       return token
     } catch(error) {

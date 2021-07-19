@@ -5,6 +5,11 @@ export default class CheckSubscription {
   public async handle (ctx: HttpContextContract, next: () => Promise<void>) {
     // code for middleware goes here. ABOVE THE NEXT CALL
     const userId: any = ctx.auth.user?.id
+
+    if(ctx.auth.user?.isAdmin === 1){
+      return next()
+    }
+
     const plansDATA = await Plan.query().preload('subscription', (subscriptionQuery) => {
       subscriptionQuery.where('user_id', '=', userId)
     }).limit(1)

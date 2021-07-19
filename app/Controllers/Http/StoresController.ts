@@ -29,7 +29,7 @@ export default class StoresController {
       })
       return response.send(storesJSON)
     } catch (error) {
-      return response.status(404).send({messege: 'Erro ao buscar emrpesas'})
+      return response.status(404).send({messege: 'Erro ao buscar empresas'})
     }
   }
 
@@ -96,20 +96,8 @@ export default class StoresController {
     } = request.all()
     const images = request.files('images')
 
-    console.log({
-      name,
-      detail,
-      telephone,
-      website,
-      address,
-      latitude,
-      longitude,
-      status,
-      category_id,
-      video_url,
-      city,
-      uf,
-    })
+    const userId: any = auth.user?.id
+    
 
     const store = await Store.create({
       name,
@@ -124,7 +112,7 @@ export default class StoresController {
       video_url,
       city,
       uf,
-      user_id: auth.user?.id
+      user_id: userId
     })
 
     let imageUrls: string[] = []

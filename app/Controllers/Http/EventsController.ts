@@ -230,23 +230,25 @@ export default class EventsController {
 
 
   public async destroy({bouncer, request, response }: HttpContextContract) {
-
-    const event = await Event.findOrFail(request.param('id'))
+    const id = request.param('id')
+    const event = await Event.findOrFail(id)
 
     await bouncer
       .with('EventPolicy')
       .authorize('delete', event)
 
-
     try {
-      await bucket.file(`events/${event.image_name}`).delete();
+      await bucket.deleteFiles({
+        prefix: `events/${id}/`,
+      })
+      
+      await event.delete()
+      return response.send({ message: 'Evento apagado com sucesso' })
+
     } catch (error) {
       console.log('deleteFiles erro: ', error)
     }
-
-    await event.delete()
-
-    return response.send({ message: 'Evento apagado com sucesso' })
+  
   }
 
   public async deleteImages({ bouncer, request, response }: HttpContextContract) {

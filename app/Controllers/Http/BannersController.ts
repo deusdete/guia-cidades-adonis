@@ -177,8 +177,8 @@ export default class BannersController {
 
   public async destroy({ bouncer, request, response }: HttpContextContract) {
 
-   
-    const banner = await Banner.findOrFail(request.param('id'))
+    const id = request.param('id')
+    const banner = await Banner.findOrFail(id)
 
     await bouncer
       .with('BannerPolicy')
@@ -186,13 +186,16 @@ export default class BannersController {
 
 
     try {
-      await bucket.file(`banners/${banner.image_name}`).delete();
+      await bucket.deleteFiles({
+        prefix: `banners/${id}/`,
+      })
+
+      await banner.delete()
+      return response.send({ message: 'Banner apagado com sucesso' })
+
     } catch (error) {
       console.log('deleteFiles erro: ', error)
     }
 
-    await banner.delete()
-
-    return response.send({ message: 'Banner apagado com sucesso' })
   }
 }

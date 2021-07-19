@@ -10,6 +10,8 @@ export default class Banners extends BaseSchema {
       table.string('description').defaultTo('')
       table.string('type').notNullable()
       table.string('link_id').notNullable()
+      table.float('latitude', 14, 10)
+      table.float('longitude', 14, 10)
       table.string('image_url').defaultTo('')
       table.string('image_name').defaultTo('')
       table.boolean('status').notNullable().defaultTo(true)
