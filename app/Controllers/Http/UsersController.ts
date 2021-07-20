@@ -66,7 +66,7 @@ export default class UsersController {
       }
     }
 
-    async delete ({bouncer, request, response}: HttpContextContract){
+    async destroy ({bouncer, request, response}: HttpContextContract){
       const user = await User.findOrFail(request.param('id'))
 
       await bouncer

@@ -31,8 +31,8 @@ export default class AuthController {
         return response.badRequest({message: 'Usuário já existe'})
       }
 
-      await User.create(body)
-      return response.send({message: 'Usuário criando com sucesso'})
+      const user = await User.create(body)
+      return response.send({message: 'Usuário criando com sucesso', user})
     } catch(error) {
       console.log(error)
       return response.badRequest({message: 'Erro ao tentar criar usuário'})

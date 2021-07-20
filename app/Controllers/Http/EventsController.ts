@@ -38,30 +38,35 @@ export default class EventsController {
   async index({ request, auth, response }: HttpContextContract) {
     try {
       const page = request.input('page', 1)
+      const city_id = request.header('X-City-Id')
       const limit = 15
 
       let eventsData: any = []
 
+      const query = Event.query()
+
+      if(city_id){
+        query.where('city_id', '=', city_id)
+      }
+
       if(auth.isLoggedIn){
         const user: any = auth?.user
         if(user?.isAdmin){
-          eventsData = await Event.query()
-            .orderBy('id', 'desc')
-            .paginate(page, limit)
+          query.orderBy('id', 'desc')
          
         }else{
-          eventsData = await Event.query()
+          query
           .where('user_id', '=', user?.id)
           .orderBy('id', 'desc')
-          .paginate(page, limit)
         }
         
       }else{
-        eventsData = await Event.query()
+        query
           .where('status', '=', 1)
           .orderBy('created_at', 'desc')
-          .paginate(page, limit)
       }
+
+      eventsData = await query.paginate(page, limit)
      
 
       const paginationJSON = eventsData.serialize({
@@ -90,6 +95,7 @@ export default class EventsController {
       telephone,
       status,
       city, 
+      city_id,
       uf,
       date_begin,
       date_end,
@@ -104,7 +110,13 @@ export default class EventsController {
 
     try {
 
-      const userSubscription = await Subscription.findOrFail(subscriptionId)
+      if(auth.user?.isAdmin !== 1){
+        const userSubscription = await Subscription.findOrFail(subscriptionId)
+        userSubscription.active_events = userSubscription.active_events + 1
+
+        await userSubscription.save()
+      } 
+      
       const event = await Event.create({
         name,
         description,
@@ -115,6 +127,7 @@ export default class EventsController {
         telephone,
         status,
         city, 
+        city_id,
         uf,
         date_begin,
         date_end,
@@ -133,9 +146,7 @@ export default class EventsController {
 
         await event.save()
 
-        userSubscription.active_events = userSubscription.active_events + 1
-
-        await userSubscription.save()
+      
 
       }
 
@@ -176,6 +187,7 @@ export default class EventsController {
       telephone,
       status,
       city,
+      city_id,
       uf,
       date_begin,
       date_end,
@@ -200,6 +212,7 @@ export default class EventsController {
       event.telephone = telephone
       event.status = status
       event.city = city 
+      event.city = city_id 
       event.uf = uf
       event.date_begin = date_begin
       event.date_end = date_end

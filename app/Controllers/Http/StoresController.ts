@@ -36,31 +36,36 @@ export default class StoresController {
   async index({ request, auth, response }: HttpContextContract) {
     try {
       const page = request.input('page', 1)
+      const city_id = request.header('X-City-Id')
       const limit = 15
 
       let storesData: any = []
 
+      const query = Store.query()
+
+      if(city_id){
+        query.where('city_id', '=', city_id)
+      }
+
       if(auth.isLoggedIn){
         const user: any = auth?.user
         if(user?.isAdmin){
-          storesData = await Store.query()
-            .orderBy('id', 'desc')
-            .paginate(page, limit)
+          query.orderBy('id', 'desc')
          
         }else{
-          storesData = await Store.query()
+          query
             .where('user_id', '=', user?.id)
             .orderBy('id', 'desc')
-            .paginate(page, limit)
         }
         
       }else{
-        storesData = await Store.query()
+        query
           .where('status', '=', 1)
           .orderBy('created_at', 'desc')
-          .paginate(page, limit)
+          
       }
      
+      storesData = await query.paginate(page, limit)
 
       const paginationJSON = storesData.serialize({
         fields: ['id', 'name', 'address', 'images_url', 'images_names', 'status']
@@ -92,6 +97,7 @@ export default class StoresController {
       category_id,
       video_url,
       city,
+      city_id,
       uf,
     } = request.all()
     const images = request.files('images')
@@ -111,6 +117,7 @@ export default class StoresController {
       category_id,
       video_url,
       city,
+      city_id,
       uf,
       user_id: userId
     })
@@ -180,6 +187,7 @@ export default class StoresController {
       category_id,
       video_url,
       city,
+      city_id,
       uf,
     } = request.all()
     const images = request.files('images')
@@ -196,6 +204,7 @@ export default class StoresController {
     store.category_id = category_id
     store.video_url = video_url
     store.city = city
+    store.city_id = city_id
     store.uf = uf
     store.video_url = video_url
 

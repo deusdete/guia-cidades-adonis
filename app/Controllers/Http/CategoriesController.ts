@@ -50,7 +50,7 @@ export default class CategoriesController {
 
       if (imageFile) {
         imageInfo = await updadeFile({
-          folder: 'caregorias',
+          folder: 'categories',
           subFolder: null,
           file: imageFile
         })

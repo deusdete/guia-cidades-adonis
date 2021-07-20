@@ -6,6 +6,8 @@ import {
   BaseModel,
   hasOne,
   HasOne,
+  beforeFetch,
+  ModelQueryBuilderContract,
 } from '@ioc:Adonis/Lucid/Orm'
 import Plan from './Plan'
 import Subscription from './Subscription'
@@ -50,5 +52,10 @@ export default class User extends BaseModel {
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
     }
+  }
+
+  @beforeFetch()
+  public static ignoreDeleted (query: ModelQueryBuilderContract<typeof User>) {
+    query.where('isAdmin', '<>', 1)
   }
 }

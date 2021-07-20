@@ -46,6 +46,9 @@ export default class Event extends BaseModel {
   public city: string
 
   @column()
+  public city_id: number
+
+  @column()
   public uf: string
 
   @column()

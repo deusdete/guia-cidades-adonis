@@ -51,6 +51,9 @@ export default class Store extends BaseModel {
 
   @column()
   public city: string
+  
+  @column()
+  public city_id: number
 
   @column()
   public uf: string
