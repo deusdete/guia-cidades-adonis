@@ -4,7 +4,7 @@ import Plan from "App/Models/Plan"
 
 export default class PlansController {
   async index({ auth, bouncer,request, response }: HttpContextContract) {
-    const {subscriptions, user} = request.all()
+    const {subscriptions} = request.all()
 
     await bouncer
       .with('PlansPolicy')
@@ -101,7 +101,7 @@ export default class PlansController {
         plan.frequency_type = body.frequency_type,
         plan.value = body.value,
         plan.repetitions = body.repetitions,
-        plan.free_trial = body.free_trial, 
+        plan.free_trial = JSON.stringify(body.free_trial), 
         plan.max_stores = body.max_stores,
         plan.max_events = body.max_events,
         plan.max_banners = body.max_banners,
