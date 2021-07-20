@@ -1,6 +1,3 @@
-import Store from 'App/Models/Store'
-import User from 'App/Models/User'
-
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
 
 

@@ -9,7 +9,7 @@ import {
   beforeFetch,
   ModelQueryBuilderContract,
 } from '@ioc:Adonis/Lucid/Orm'
-import Plan from './Plan'
+
 import Subscription from './Subscription'
 
 export default class User extends BaseModel {
