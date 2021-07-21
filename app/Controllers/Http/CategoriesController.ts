@@ -171,9 +171,9 @@ export default class CategoriesController {
 
   public async deleteImages({ request, response }: HttpContextContract) {
     const id = request.param('id')
-    const { all, index } = request.all()
+    const { all, index, image_name } = request.all()
     const category = await Category.findOrFail(id)
-    console.log({ all, index })
+    console.log({ all, index, image_name })
     try {
 
       if (all) {
@@ -193,7 +193,7 @@ export default class CategoriesController {
 
 
 
-        const file = bucket.file(`stores/${id}/${index}`);
+        const file = bucket.file(`categories/${id}/${image_name}`);
         await file.delete()
 
        
