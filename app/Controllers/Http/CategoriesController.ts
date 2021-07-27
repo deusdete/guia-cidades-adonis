@@ -169,11 +169,16 @@ export default class CategoriesController {
     return response.send({ message: 'Categoria apagado com sucesso' })
   }
 
-  public async deleteImages({ request, response }: HttpContextContract) {
+  public async deleteImages({ bouncer, request, response }: HttpContextContract) {
     const id = request.param('id')
     const { all, index, image_name } = request.all()
     const category = await Category.findOrFail(id)
     console.log({ all, index, image_name })
+
+    await bouncer
+      .with('CategoryPolicy')
+      .authorize('delete')
+
     try {
 
       if (all) {
@@ -191,13 +196,16 @@ export default class CategoriesController {
         return response.send({ message: 'Images apagadas com sucesso' })
       } else {
 
-
-
-        const file = bucket.file(`categories/${id}/${image_name}`);
+        const file = bucket.file(`categories/${image_name}`);
         await file.delete()
 
-       
-
+        if(category.imageName === image_name){
+          category.imageName = ""
+          category.imageUrl = ""
+        }else{
+          category.iconName = ""
+          category.iconUrl = ""
+        }
 
         await category.save()
 

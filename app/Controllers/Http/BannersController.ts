@@ -198,4 +198,33 @@ export default class BannersController {
     }
 
   }
+
+  public async deleteImages({ bouncer, request, response }: HttpContextContract) {
+    const id = request.param('id')
+    const banner = await Banner.findOrFail(id)
+
+    await bouncer
+      .with('BannerPolicy')
+      .authorize('delete', banner)
+
+    try {
+
+      await bucket.deleteFiles({
+        prefix: `banners/${id}/`,
+      })
+
+      banner.image_name = ""
+      banner.image_url = ""
+
+      await banner.save()
+
+      return response.send({ message: 'Images apagadas com sucesso' })
+
+
+    } catch (error) {
+      console.log('deleteImages erro: ', error)
+      return response.status(404).send({ message: 'Falha ao apagado imagem index'})
+    }
+
+  }
 }

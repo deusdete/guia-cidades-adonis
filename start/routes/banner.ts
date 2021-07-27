@@ -9,4 +9,5 @@ Route.resource('banner', 'BannersController')
     update: 'auth',
     destroy: 'auth'
   })
-
+Route.delete('banner/:id/images', 'BannersController.deleteImages')
+  .middleware('auth')

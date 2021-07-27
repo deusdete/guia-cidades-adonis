@@ -7,3 +7,6 @@ Route.resource('category', 'CategoriesController')
     update: 'auth',
     destroy: 'auth'
   })
+
+Route.delete('category/:id/images', 'CategoriesController.deleteImages')
+  .middleware('auth')
