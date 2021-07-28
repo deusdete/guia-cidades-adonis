@@ -25,6 +25,8 @@ export default class EventPolicy extends BasePolicy {
 		if (!user) {
 			return false
 		}
+
+		return true
 	}
 
 	public async update(user: User, event: Event) {

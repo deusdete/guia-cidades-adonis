@@ -22,7 +22,9 @@ export default class SubscriptionsPolicy extends BasePolicy {
 	public async update(user: User) {
 		if (user && user.isAdmin === 1) {
 			return true
-		  }
+		} 
+		
+		return false
 	}
 	public async delete(user: User) {
 		if (user && user.isAdmin === 1) {

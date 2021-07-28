@@ -25,6 +25,8 @@ export default class StorePolicy extends BasePolicy {
 		if (!user) {
 			return false
 		}
+
+		return true
 	}
 
 	public async update(user: User, store: Store) {
@@ -38,7 +40,7 @@ export default class StorePolicy extends BasePolicy {
 		if (actionResult.authorized) {
 			console.log(`${action} was authorized`)
 		  } else {
-			console.log(`${action} denied with "${actionResult.errorResponse}" message`)
+			console.log(`${action} denied with "${actionResult}" message`)
 		  }
 	}
 }

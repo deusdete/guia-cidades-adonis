@@ -9,4 +9,4 @@ Route.resource('event', 'EventsController')
     destroy: 'auth'
   })
 Route.get('event/all/list', 'EventsController.allList')
-Route.delete('event/:id/images', 'EventsController.deleteImages')
+Route.delete('event/:id/images', 'EventsController.deleteImages').middleware('auth')

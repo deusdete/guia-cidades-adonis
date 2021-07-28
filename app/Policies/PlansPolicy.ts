@@ -16,7 +16,9 @@ export default class PlansPolicy extends BasePolicy {
 	public async create(user: User) {
 		if (user && user.isAdmin === 1) {
 			return true
-		  }
+		} 
+		
+		return false
 	}
 	public async update(user: User) {
 		if (user && user.isAdmin === 1) {
