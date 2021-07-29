@@ -5,7 +5,7 @@ Route.resource('store', 'StoresController')
   .middleware({
     index: 'guest',
     show: 'auth',
-    store: ['auth', 'plan'],
+    store: ['auth', 'storeLimit'],
     update: 'auth',
     destroy: 'auth'
   })

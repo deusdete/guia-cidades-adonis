@@ -19,18 +19,6 @@ export default class CheckSubscription {
       return
     }
 
-    if(plansDATA[0].$preloaded.subscription[0].active_events === plansDATA[0].max_events ){
-      ctx.response.unauthorized({ error: `Numero máximo de eventos utilizado. Entre em contato com o administrador para alterar plano` })
-      return
-    }
-    
-    if(
-        plansDATA[0].allow_create_banner !== 0 && 
-        (plansDATA[0].$preloaded.subscription[0].active_banner === plansDATA[0].max_banners)
-      ){
-        ctx.response.unauthorized({ error: `Numero máximo de banner utilizado. Entre em contato com o administrador para alterar plano` })
-      return
-    }
     ctx.subscriptionId = plansDATA[0].$preloaded.subscription[0].id
     await next()
   }

@@ -242,7 +242,7 @@ export default class EventsController {
   }
 
 
-  public async destroy({bouncer, request, response }: HttpContextContract) {
+  public async destroy({bouncer, auth, request, subscriptionId, response }: HttpContextContract) {
     const id = request.param('id')
     const event = await Event.findOrFail(id)
 
@@ -251,11 +251,21 @@ export default class EventsController {
       .authorize('delete', event)
 
     try {
+
+      
       await bucket.deleteFiles({
         prefix: `events/${id}/`,
       })
       
       await event.delete()
+
+      if(auth.user?.isAdmin !== 1){
+        const userSubscription = await Subscription.findOrFail(subscriptionId)
+        userSubscription.active_events = userSubscription.active_events + 1
+
+        await userSubscription.save()
+      } 
+
       return response.send({ message: 'Evento apagado com sucesso' })
 
     } catch (error) {

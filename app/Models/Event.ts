@@ -31,6 +31,9 @@ export default class Event extends BaseModel {
   public telephone: string
 
   @column()
+  public whatsapp_number: string
+
+  @column()
   public status: number
 
   @column()

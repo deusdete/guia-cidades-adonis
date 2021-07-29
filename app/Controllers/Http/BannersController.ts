@@ -7,6 +7,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import path from 'path'
 
 import { Storage } from '@google-cloud/storage'
+import Subscription from 'App/Models/Subscription'
 
 const storage = new Storage({
   keyFile: path.resolve(Env.get('GOOGLE_APPLICATION_CREDENTIALS'))
@@ -58,7 +59,7 @@ export default class BannersController {
     }
   }
 
-  async store({ bouncer, request, auth, response }: HttpContextContract) {
+  async store({ bouncer, request, auth, subscriptionId, response }: HttpContextContract) {
 
     await bouncer
       .with('BannerPolicy')
@@ -101,6 +102,13 @@ export default class BannersController {
         banner.image_name = imageInfo.fileName
 
         await banner.save()
+      }
+
+      if(auth.user?.isAdmin !== 1){
+        const userSubscription = await Subscription.findOrFail(subscriptionId)
+        userSubscription.active_banner = userSubscription.active_banner + 1
+
+        await userSubscription.save()
       }
 
       return response.status(201).send({message: 'Banner criada com sucesso'})
@@ -175,7 +183,7 @@ export default class BannersController {
   }
 
 
-  public async destroy({ bouncer, request, response }: HttpContextContract) {
+  public async destroy({ bouncer, auth, request, subscriptionId, response }: HttpContextContract) {
 
     const id = request.param('id')
     const banner = await Banner.findOrFail(id)
@@ -191,6 +199,14 @@ export default class BannersController {
       })
 
       await banner.delete()
+
+      if(auth.user?.isAdmin !== 1){
+        const userSubscription = await Subscription.findOrFail(subscriptionId)
+        userSubscription.active_banner = userSubscription.active_banner - 1
+
+        await userSubscription.save()
+      }
+
       return response.send({ message: 'Banner apagado com sucesso' })
 
     } catch (error) {

@@ -50,6 +50,9 @@ export default class Store extends BaseModel {
   public telephone: string
 
   @column()
+  public whatsapp_number: string
+
+  @column()
   public city: string
   
   @column()

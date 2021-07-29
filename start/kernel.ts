@@ -43,5 +43,7 @@ Server.middleware.register([
 Server.middleware.registerNamed({
   auth: () => import('App/Middleware/Auth'),
   guest: () => import('App/Middleware/Guest'),
-  plan: () => import('App/Middleware/CheckSubscription')   
+  storeLimit: () => import('App/Middleware/CheckStoreLimit'),   
+  eventLimit: () => import('App/Middleware/CheckEventLimit'),   
+  bannerLimit: () => import('App/Middleware/CheckBannerLimit')   
 })

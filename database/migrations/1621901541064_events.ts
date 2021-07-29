@@ -14,6 +14,7 @@ export default class Events extends BaseSchema {
       table.float('latitude', 14, 7)
       table.float('longitude', 14, 7)
       table.string('telephone').defaultTo('')
+      table.string('whatsapp_number').defaultTo("")
       table.boolean('status').notNullable().defaultTo(true)
       table.string('image_url').defaultTo('')
       table.string('image_name').defaultTo('')

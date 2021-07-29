@@ -5,7 +5,7 @@ Route.resource('banner', 'BannersController')
   .apiOnly()
   .middleware({
     index: 'guest',
-    store: 'auth',
+    store: ['auth', 'bannerLimit'],
     update: 'auth',
     destroy: 'auth'
   })

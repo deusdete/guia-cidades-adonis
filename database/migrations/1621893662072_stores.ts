@@ -18,6 +18,7 @@ export default class Stores extends BaseSchema {
       table.json('images_names').defaultTo("[]")
       table.string('video_url').defaultTo("")
       table.string('telephone').defaultTo("")
+      table.string('whatsapp_number').defaultTo("")
       table.string('city').defaultTo("")
       table.integer('city_id').notNullable()
       table.string('uf').defaultTo("")

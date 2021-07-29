@@ -7,6 +7,7 @@ import path from 'path'
 
 import { Storage } from '@google-cloud/storage'
 import updadeFile from 'App/Utils/UpdateFile'
+import Subscription from 'App/Models/Subscription'
 
 const storage = new Storage({
   keyFile: path.resolve(Env.get('GOOGLE_APPLICATION_CREDENTIALS'))
@@ -79,7 +80,7 @@ export default class StoresController {
     }
   }
 
-  async store({ bouncer, request, auth, response }: HttpContextContract) {
+  async store({ bouncer, request, subscriptionId, auth, response }: HttpContextContract) {
 
     await bouncer
       .with('StorePolicy')
@@ -89,6 +90,7 @@ export default class StoresController {
       name,
       detail,
       telephone,
+      whatsapp_number,
       website,
       address,
       latitude,
@@ -109,6 +111,7 @@ export default class StoresController {
       name,
       detail,
       telephone,
+      whatsapp_number,
       website,
       address,
       latitude,
@@ -142,6 +145,14 @@ export default class StoresController {
 
       store.images_url = JSON.stringify(imageUrls)
       store.images_names = JSON.stringify(imageNames)
+
+      if(auth.user?.isAdmin !== 1){
+        const userSubscription = await Subscription.findOrFail(subscriptionId)
+        userSubscription.active_stores = userSubscription.active_stores + 1
+
+        await userSubscription.save()
+      } 
+
 
       await store.save()
 
@@ -179,6 +190,7 @@ export default class StoresController {
       name,
       detail,
       telephone,
+      whatsapp_number,
       website,
       address,
       latitude,
@@ -196,6 +208,7 @@ export default class StoresController {
       store.name = name
     store.detail = detail
     store.telephone = telephone
+    store.whatsapp_number = whatsapp_number
     store.website = website
     store.address = address
     store.latitude = latitude
@@ -239,7 +252,7 @@ export default class StoresController {
   }
 
 
-  public async destroy({ bouncer, request, response }: HttpContextContract) {
+  public async destroy({ bouncer, auth, request, subscriptionId, response }: HttpContextContract) {
     const id = request.param('id')
     const store = await Store.findOrFail(id)
 
@@ -255,6 +268,14 @@ export default class StoresController {
         prefix: `stores/${id}/`,
       })
       await store.delete()
+
+      
+      if(auth.user?.isAdmin !== 1){
+        const userSubscription = await Subscription.findOrFail(subscriptionId)
+        userSubscription.active_stores = userSubscription.active_stores - 1
+
+        await userSubscription.save()
+      } 
 
       return response.send({ message: 'Loja apagado com sucesso' })
 
