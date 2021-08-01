@@ -32,6 +32,6 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
-Route.get('home', 'HomeController.index').middleware(['guest', 'auth'])
+Route.get('home', 'HomeController.index').middleware(['guest'])
  
  

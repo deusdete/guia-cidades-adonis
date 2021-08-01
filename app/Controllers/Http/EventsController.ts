@@ -93,6 +93,7 @@ export default class EventsController {
       latitude,
       longitude,
       telephone,
+      whatsapp_number,
       status,
       city, 
       city_id,
@@ -125,6 +126,7 @@ export default class EventsController {
         latitude,
         longitude,
         telephone,
+        whatsapp_number,
         status,
         city, 
         city_id,
@@ -185,6 +187,7 @@ export default class EventsController {
       latitude,
       longitude,
       telephone,
+      whatsapp_number,
       status,
       city,
       city_id,
@@ -210,6 +213,7 @@ export default class EventsController {
       event.latitude = latitude
       event.longitude = longitude
       event.telephone = telephone
+      event.whatsapp_number = whatsapp_number
       event.status = status
       event.city = city 
       event.city = city_id 
@@ -261,7 +265,7 @@ export default class EventsController {
 
       if(auth.user?.isAdmin !== 1){
         const userSubscription = await Subscription.findOrFail(subscriptionId)
-        userSubscription.active_events = userSubscription.active_events + 1
+        userSubscription.active_events = userSubscription.active_events - 1
 
         await userSubscription.save()
       } 
