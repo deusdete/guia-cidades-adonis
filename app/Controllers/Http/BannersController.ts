@@ -48,7 +48,7 @@ export default class BannersController {
      
 
       const paginationJSON = bannersData.serialize({
-        fields: ['id', 'title', 'description', 'image_url', 'image_name', 'status']
+        fields: ['id', 'title', 'description', 'type', 'link_id', 'image_url', 'image_name', 'status']
       })
 
       return paginationJSON
