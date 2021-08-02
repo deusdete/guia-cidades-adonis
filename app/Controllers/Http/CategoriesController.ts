@@ -7,7 +7,6 @@ import path from 'path'
 
 import { Storage } from '@google-cloud/storage'
 import updadeFile from 'App/Utils/UpdateFile'
-import { Response } from '@adonisjs/core/build/standalone'
 
 const storage = new Storage({
   keyFile: path.resolve(Env.get('GOOGLE_APPLICATION_CREDENTIALS'))
