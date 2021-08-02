@@ -7,6 +7,7 @@ import path from 'path'
 
 import { Storage } from '@google-cloud/storage'
 import updadeFile from 'App/Utils/UpdateFile'
+import { Response } from '@adonisjs/core/build/standalone'
 
 const storage = new Storage({
   keyFile: path.resolve(Env.get('GOOGLE_APPLICATION_CREDENTIALS'))
@@ -16,11 +17,11 @@ const bucket = storage.bucket('guia_cidades');
 
 export default class CategoriesController {
 
-  async index() {
+  async index({response}: HttpContextContract) {
     try {
       const categories = await Category.all()
       
-      return categories
+      return response.send({categories})
 
     } catch (error) {
 
