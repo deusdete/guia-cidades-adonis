@@ -38,7 +38,7 @@ export default class StoresController {
     try {
       const page = request.input('page', 1)
       const city_id = request.header('X-City-Id')
-      const limit = 15
+      const limit = 5
 
       let storesData: any = []
 
