@@ -36,11 +36,11 @@ export default class EventPolicy extends BasePolicy {
 		return event.user_id === user.id
 	}
 
-    public async after(action, actionResult) {
-		if (actionResult.authorized) {
-			console.log(`${action} was authorized`)
-		  } else {
-			console.log(`${action} denied with "${actionResult.errorResponse}" message`)
-		  }
-	}
+    // public async after(action, actionResult) {
+	// 	if (actionResult.authorized) {
+	// 		console.log(`${action} was authorized`)
+	// 	  } else {
+	// 		console.log(`${action} denied with "${actionResult.errorResponse}" message`)
+	// 	  }
+	// }
 }

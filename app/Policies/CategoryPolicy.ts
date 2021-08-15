@@ -25,11 +25,11 @@ export default class CategoryPolicy extends BasePolicy {
 		  }
 	}
 
-	public async after(action, actionResult) {
-		if (actionResult.authorized) {
-			console.log(`${action} was authorized`)
-		  } else {
-			console.log(`${action} denied with "${actionResult.errorResponse}" message`)
-		  }
-	}
+	// public async after(action, actionResult) {
+	// 	if (actionResult.authorized) {
+	// 		console.log(`${action} was authorized`)
+	// 	  } else {
+	// 		console.log(`${action} denied with "${actionResult.errorResponse}" message`)
+	// 	  }
+	// }
 }

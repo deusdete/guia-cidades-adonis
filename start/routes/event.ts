@@ -4,6 +4,7 @@ Route.resource('event', 'EventsController')
   .apiOnly()
   .middleware({
     index: 'guest',
+    show: 'guest',
     store: ['auth', 'eventLimit'],
     update: 'auth',
     destroy: 'auth'

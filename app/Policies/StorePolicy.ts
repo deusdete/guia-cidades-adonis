@@ -36,11 +36,11 @@ export default class StorePolicy extends BasePolicy {
 		return store.user_id === user.id
 	}
 
-	public async after(action, actionResult) {
-		if (actionResult.authorized) {
-			console.log(`${action} was authorized`)
-		  } else {
-			console.log(`${action} denied with "${actionResult}" message`)
-		  }
-	}
+	// public async after(action, actionResult) {
+	// 	if (actionResult.authorized) {
+	// 		console.log(`${action} was authorized`)
+	// 	  } else {
+	// 		console.log(`${action} denied with "${actionResult}" message`)
+	// 	  }
+	// }
 }
