@@ -36,6 +36,7 @@ export default class StoresController {
 
   async index({ request, auth, response }: HttpContextContract) {
     try {
+      const {category_id} = request.qs()
       const page = request.input('page', 1)
       const city_id = request.header('X-City-Id')
       const limit = 5
@@ -46,6 +47,10 @@ export default class StoresController {
 
       if(city_id){
         query.where('city_id', '=', city_id)
+      }
+
+      if(category_id){
+        query.where('category_id', '=', parseInt(category_id))
       }
 
       if(auth.isLoggedIn){
