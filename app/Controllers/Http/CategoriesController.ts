@@ -16,9 +16,14 @@ const bucket = storage.bucket('guia_cidades');
 
 export default class CategoriesController {
 
-  async index({response}: HttpContextContract) {
+  async index({request, response}: HttpContextContract) {
+    const {search} = request.qs()
     try {
-      const categories = await Category.all()
+      const query = Category.query()
+      if (search) {
+        query.where('name', 'LIKE', '%'+search+'%')
+      }
+      const categories =  await query.orderBy('name', 'desc')
       
       return response.send({categories})
 
