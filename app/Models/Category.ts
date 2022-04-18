@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeUpdate, column } from '@ioc:Adonis/Lucid/Orm'
+import Store from './Store'
 
 export default class Category extends BaseModel {
   @column({ isPrimary: true })
@@ -25,4 +26,21 @@ export default class Category extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @beforeUpdate()
+  public static async hashPassword(category: Category) {
+    if (category.$dirty.name) {
+      const stores = await Store.query().where(
+        'category_id',
+        '=',
+        category.id,
+      )
+
+      stores.map(async (store) => {
+        await Store.query()
+          .where('id', store.id)
+          .update({ category_name: category.$dirty.name })
+      })
+    }
+  }
 }

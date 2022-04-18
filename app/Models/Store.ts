@@ -24,6 +24,9 @@ export default class Store extends BaseModel {
   public category_id: number
 
   @column()
+  public category_name: string
+
+  @column()
   public status: number
 
   @column()
