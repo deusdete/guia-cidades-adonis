@@ -70,10 +70,18 @@ export default class EventsController {
      
 
       const paginationJSON = eventsData.serialize({
-        fields: ['id', 'name', 'address', 'image_url', 'image_name', 'status']
+        fields: ['id', 'name', 'description', 'address', 'date_begin', 'image_url', 'image_name', 'status']
       })
 
-      return paginationJSON
+      
+      const data = paginationJSON.data.map((item) => {
+        return {
+          ...item,
+          type: 'event',
+        }
+      })
+
+      return { meta: paginationJSON.meta, data }
 
     } catch (error) {
       console.log(error)
