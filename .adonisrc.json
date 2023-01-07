@@ -30,5 +30,8 @@
   ],
   "aceProviders": [
     "@adonisjs/repl"
+  ],
+  "metaFiles": [
+    ".env"
   ]
 }
