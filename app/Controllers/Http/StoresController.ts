@@ -1,19 +1,10 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Store from 'App/Models/Store'
 
-import Env from '@ioc:Adonis/Core/Env'
+import Drive from '@ioc:Adonis/Core/Drive'
 
-import path from 'path'
-
-import { Storage } from '@google-cloud/storage'
 import updadeFile from 'App/Utils/UpdateFile'
 import Subscription from 'App/Models/Subscription'
-
-const storage = new Storage({
-  keyFile: path.resolve(Env.get('GOOGLE_APPLICATION_CREDENTIALS')),
-})
-
-const bucket = storage.bucket('guia_cidades')
 
 export default class StoresController {
   async allList({ auth, response }: HttpContextContract) {
@@ -266,9 +257,10 @@ export default class StoresController {
     await bouncer.with('StorePolicy').authorize('delete', store)
 
     try {
-      await bucket.deleteFiles({
-        prefix: `stores/${id}/`,
-      })
+      // await bucket.deleteFiles({
+      //   prefix: `stores/${id}/`,
+      // })
+      await Drive.delete(`stores/${id}/`)
       await store.delete()
 
       if (auth.user?.isAdmin !== 1) {
@@ -299,9 +291,11 @@ export default class StoresController {
     console.log({ all, index, image_name })
     try {
       if (all) {
-        await bucket.deleteFiles({
-          prefix: `stores/${id}/`,
-        })
+        // await bucket.deleteFiles({
+        //   prefix: `stores/${id}/`,
+        // })
+
+        await Drive.delete(`stores/${id}/`)
 
         store.images_names = '[]'
         store.images_url = '[]'
@@ -312,8 +306,10 @@ export default class StoresController {
       } else {
         const image_names = JSON.parse(store.images_names)
 
-        const file = bucket.file(`stores/${id}/${image_names[index]}`)
-        await file.delete()
+        // const file = bucket.file(`stores/${id}/${image_names[index]}`)
+        // await file.delete()
+
+        await Drive.delete(`stores/${id}/${image_names[index]}`)
 
         const images_names = JSON.parse(store.images_names)
         const images_url = JSON.parse(store.images_url)

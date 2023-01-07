@@ -2,18 +2,9 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Event from 'App/Models/Event'
 import updadeFile from 'App/Utils/UpdateFile'
 
-import Env from '@ioc:Adonis/Core/Env'
+import Drive from '@ioc:Adonis/Core/Drive'
 
-import path from 'path'
-
-import { Storage } from '@google-cloud/storage'
 import Subscription from 'App/Models/Subscription'
-
-const storage = new Storage({
-  keyFile: path.resolve(Env.get('GOOGLE_APPLICATION_CREDENTIALS'))
-});
-
-const bucket = storage.bucket('guia_cidades');
 
 export default class EventsController {
 
@@ -22,6 +13,7 @@ export default class EventsController {
     try {
 
       const user: any = auth?.user
+      console.log('user',user)
       const eventsData = await Event.query().where('user_id', '=', user?.id)
       const eventsJSON = eventsData.map(event => {
         return {
@@ -31,6 +23,7 @@ export default class EventsController {
       })
       return response.send(eventsJSON)
     } catch (error) {
+      console.log(error)
       return response.status(404).send({messege: 'Erro ao buscar emrpesas'})
     }
   }
@@ -265,9 +258,11 @@ export default class EventsController {
     try {
 
       
-      await bucket.deleteFiles({
-        prefix: `events/${id}/`,
-      })
+      // await bucket.deleteFiles({
+      //   prefix: `events/${id}/`,
+      // })
+
+      await Drive.delete(`events/${id}/`)
       
       await event.delete()
 
@@ -299,9 +294,11 @@ export default class EventsController {
     try {
 
       if (all) {
-        await bucket.deleteFiles({
-          prefix: `events/${id}/`,
-        })
+        // await bucket.deleteFiles({
+        //   prefix: `events/${id}/`,
+        // })
+
+        await Drive.delete(`events/${id}/`)
 
         event.image_name = ""
         event.image_url = ""
@@ -312,8 +309,10 @@ export default class EventsController {
       } else {
 
 
-        const file = bucket.file(`events/${id}/${image_name}`);
-        await file.delete()
+        // const file = bucket.file(`events/${id}/${image_name}`);
+        // await file.delete()
+
+        await Drive.delete(`events/${id}/${image_name}`)
 
         event.image_name = ""
         event.image_url = ""

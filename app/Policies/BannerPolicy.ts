@@ -4,7 +4,7 @@ import User from 'App/Models/User'
 
 export default class BannerPolicy extends BasePolicy {
     public async before(user: User | null) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 		  return true
 		}
 	  }

@@ -1,68 +1,67 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from "luxon";
+import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
 
 export default class Event extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: number;
 
   @column()
-  public name: string
+  public name: string;
 
   @column()
-  public description: string
-
-
-  @column()
-  public store_id: number
+  public description: string;
 
   @column()
-  public website: string
+  public store_id: number;
 
   @column()
-  public address: string
+  public website: string;
 
   @column()
-  public latitude: number
+  public address: string;
 
   @column()
-  public longitude: number
+  public latitude: number;
 
   @column()
-  public telephone: string
+  public longitude: number;
 
   @column()
-  public whatsapp_number: string
+  public telephone: string;
 
   @column()
-  public status: number
+  public whatsapp_number: string;
 
   @column()
-  public image_url: string
+  public status: number;
 
   @column()
-  public image_name: string
+  public image_url: string;
 
   @column()
-  public user_id: number
+  public image_name: string;
 
   @column()
-  public city: string
+  public user_id: number;
 
   @column()
-  public city_id: number
+  public city: string;
 
   @column()
-  public uf: string
+  public city_id: number;
 
   @column()
-  public date_begin: string
+  public uf: string;
 
   @column()
-  public date_end: string
+  public date_begin: string;
+
+  @column()
+  public date_end: string;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public createdAt: DateTime;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
 }

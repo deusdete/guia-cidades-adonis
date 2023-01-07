@@ -4,7 +4,7 @@ import Store from 'App/Models/Store'
 
 export default class StorePolicy extends BasePolicy {
 	public async before(user: User | null) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 		  return true
 		}
 	}

@@ -4,7 +4,7 @@ import Event from 'App/Models/Event'
 
 export default class EventPolicy extends BasePolicy {
     public async before(user: User | null) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 		  return true
 		}
 	  }

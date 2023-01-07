@@ -3,7 +3,7 @@ import User from 'App/Models/User'
 
 export default class UserPolicy extends BasePolicy {
     public async before(user: User | null) {
-        if (user && user.isAdmin === 1) {
+        if (user && user.isAdmin) {
             return true
         }
     }
@@ -13,7 +13,7 @@ export default class UserPolicy extends BasePolicy {
         return user.id === userAuth.id
 	}
 	public async create(user: User) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 			return true
 		} 
 		
@@ -23,7 +23,7 @@ export default class UserPolicy extends BasePolicy {
         return user.id === userAuth.id
 	}
 	public async delete(user: User) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 			return true
 		  }
 	}

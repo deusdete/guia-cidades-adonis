@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import './routes/auth'
 import './routes/banner'
 import './routes/category'
@@ -33,5 +34,14 @@ Route.get('/', async () => {
 })
 
 Route.get('home', 'HomeController.index').middleware(['guest'])
+Route.post('upload/image', 'HomeController.uploadImage').middleware(['guest'])
+
+Route.get('health', async ({ response }) => {
+  const report = await HealthCheck.getReport()
+  
+  return report.healthy
+    ? response.ok(report)
+    : response.badRequest(report)
+})
  
  

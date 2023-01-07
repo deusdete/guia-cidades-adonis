@@ -1,37 +1,59 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from "luxon";
+import {
+  afterDelete,
+  afterSave,
+  BaseModel,
+  column,
+} from "@ioc:Adonis/Lucid/Orm";
+import Redis from "@ioc:Adonis/Addons/Redis";
 
 export default class Banner extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: number;
 
   @column()
-  public title: string
+  public title: string;
 
   @column()
-  public description: string
+  public description: string;
 
   @column()
-  public type: string
+  public type: string;
 
   @column()
-  public link_id: string
+  public link_id: string;
 
   @column()
-  public image_url: string
+  public image_url: string;
 
   @column()
-  public image_name: string
+  public image_name: string;
 
   @column()
-  public status: number
+  public status: number;
 
   @column()
-  public user_id: number
+  public user_id: number;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public createdAt: DateTime;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
+
+  @afterSave()
+  public static async updateRedisCategoriesAfterUpdate() {
+    const banners = await Banner.query()
+      .where("status", "=", 1)
+      .orderBy("created_at", "desc");
+    await Redis.set("categories", JSON.stringify(banners), "EX", 60);
+  }
+
+  @afterDelete()
+  public static async updateRedisCategoriesAfterDelete() {
+    const banners = await Banner.query()
+      .where("status", "=", 1)
+      .orderBy("created_at", "desc");
+    await Redis.set("categories", JSON.stringify(banners), "EX", 60);
+  }
 }

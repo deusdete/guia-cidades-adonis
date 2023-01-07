@@ -3,30 +3,30 @@ import User from 'App/Models/User'
 
 export default class PlansPolicy extends BasePolicy {
 	public async before(user: User | null) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 		  return true
 		}
 	  }
 
     public async view(user: User) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 			return true
 		  }
 	}
 	public async create(user: User) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 			return true
 		} 
 		
 		return false
 	}
 	public async update(user: User) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 			return true
 		  }
 	}
 	public async delete(user: User) {
-		if (user && user.isAdmin === 1) {
+		if (user && user.isAdmin) {
 			return true
 		  }
 	}

@@ -24,7 +24,9 @@
     "@adonisjs/core",
     "@adonisjs/lucid",
     "@adonisjs/auth",
-    "@adonisjs/bouncer"
+    "@adonisjs/bouncer",
+    "@adonisjs/redis",
+    "@adonisjs/drive-s3"
   ],
   "aceProviders": [
     "@adonisjs/repl"
