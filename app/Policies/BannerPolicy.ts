@@ -11,7 +11,7 @@ export default class BannerPolicy extends BasePolicy {
 
 	@action({ allowGuest: true })
 	public async view(user: User, banner: Banner) {
-		if (banner.status === 1) {
+		if (banner.status) {
 			return true
 		  }
 	  

@@ -6,7 +6,7 @@ export default class CheckSubscription {
     // code for middleware goes here. ABOVE THE NEXT CALL
     const userId: any = ctx.auth.user?.id
 
-    if(ctx.auth.user?.isAdmin === 1){
+    if(ctx.auth.user?.isAdmin){
       return next()
     }
 
@@ -14,7 +14,7 @@ export default class CheckSubscription {
       subscriptionQuery.where('user_id', '=', userId)
     }).limit(1)
 
-    if(plansDATA[0].$preloaded.subscription[0].active_stores === plansDATA[0].max_stores ){
+    if(plansDATA[0].$preloaded.subscription[0].active_stores === plansDATA[0].max_stores){
       ctx.response.unauthorized({ error: `Numero máximo de lojas utilizada. Entre em contato com o administrador para alterar plano` })
       return
     }

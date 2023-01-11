@@ -29,7 +29,10 @@ export default class CategoriesController {
       }
 
       return response.send({ categories, redis_cache })
-    } catch (error) {}
+    } catch (error) {
+      console.log('err', error)
+      return response.status(400).send(error)
+    }
   }
 
   async store({ bouncer, request, response }: HttpContextContract) {

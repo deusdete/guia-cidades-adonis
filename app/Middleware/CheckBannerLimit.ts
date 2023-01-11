@@ -6,7 +6,7 @@ export default class CheckSubscription {
     // code for middleware goes here. ABOVE THE NEXT CALL
     const userId: any = ctx.auth.user?.id
 
-    if(ctx.auth.user?.isAdmin === 1){
+    if(ctx.auth.user?.isAdmin){
       return next()
     }
 

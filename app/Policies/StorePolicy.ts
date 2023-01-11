@@ -11,7 +11,7 @@ export default class StorePolicy extends BasePolicy {
 
 	@action({ allowGuest: true })
 	public async view(user: User, store: Store) {
-		if (store.status === 1) {
+		if (store.status) {
 			return true
 		  }
 	  

@@ -11,7 +11,7 @@ export default class EventPolicy extends BasePolicy {
 
 	@action({ allowGuest: true })
 	public async view(user: User, event: Event) {
-		if (event.status === 1) {
+		if (event.status) {
 			return true
 		  }
 	  
